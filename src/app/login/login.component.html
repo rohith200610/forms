@@ -1,0 +1,47 @@
+<div class="login-container">
+  <div class="login-form">
+    <h1>Welcome to Personal Expense Tracker</h1>
+    
+    <form (ngSubmit)="onLogin()" #loginForm="ngForm">
+      <div class="form-group">
+        <label for="email">Email <span class="required">*</span></label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          [(ngModel)]="email"
+          #emailInput="ngModel"
+          required
+          email
+          class="form-control"
+          [class.error]="emailInput.invalid && emailInput.touched"
+        >
+        <div class="error-message" *ngIf="emailInput.invalid && emailInput.touched">
+          <span *ngIf="emailInput.errors?.['required']">Valid email required</span>
+          <span *ngIf="emailInput.errors?.['email']">Valid email required</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password <span class="required">*</span></label>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          [(ngModel)]="password"
+          #passwordInput="ngModel"
+          required
+          class="form-control"
+          [class.error]="passwordInput.invalid && passwordInput.touched"
+        >
+        <div class="error-message" *ngIf="passwordInput.invalid && passwordInput.touched">
+          <span *ngIf="passwordInput.errors?.['required']">Password is required</span>
+        </div>
+      </div>
+
+      <button type="submit" class="login-button" [disabled]="loginForm.invalid">
+        Login
+      </button>
+    </form>
+  </div>
+</div>

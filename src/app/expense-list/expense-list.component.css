@@ -1,0 +1,81 @@
+.expense-table {
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.expense-table th {
+  background-color: #f8f9fa;
+  font-weight: bold;
+  color: #2c5f5f;
+  padding: 12px;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.expense-table td {
+  padding: 12px;
+  vertical-align: middle;
+}
+
+.expense-table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+.expense-table tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.card {
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  border: none;
+  margin-bottom: 20px;
+}
+
+.card-title {
+  font-size: 0.9rem;
+  margin-bottom: 8px;
+}
+
+.btn-outline-primary {
+  color: #2c5f5f;
+  border-color: #2c5f5f;
+}
+
+.btn-outline-primary:hover {
+  background-color: #2c5f5f;
+  border-color: #2c5f5f;
+}
+
+.btn-success {
+  background-color: #28a745;
+  border-color: #28a745;
+}
+
+.btn-outline-secondary {
+  color: #6c757d;
+  border-color: #6c757d;
+}
+
+h2 {
+  color: #2c5f5f;
+}
+
+.input-group {
+  max-width: 300px;
+}
+
+.table-responsive {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* Type column styling */
+.expense-table td:last-child {
+  font-weight: 600;
+}
+
+/* Amount column styling */
+.expense-table td:nth-child(2) {
+  font-weight: 600;
+  color: #2c5f5f;
+}

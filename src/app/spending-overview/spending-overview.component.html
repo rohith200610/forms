@@ -1,0 +1,94 @@
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>📊 Spending Overview:</h2>
+    <button class="btn btn-outline-primary btn-sm" (click)="toggleEditMode()">
+      ✏️ {{ isEditMode ? 'Save' : 'Edit' }}
+    </button>
+  </div>
+  
+  <div class="table-responsive">
+    <table class="table table-bordered spending-table">
+      <thead>
+        <tr>
+          <th scope="col">Category</th>
+          <th scope="col">Percentage</th>
+          <th scope="col" *ngIf="isEditMode">Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let category of spendingCategories; let i = index">
+          <td>
+            <span *ngIf="!isEditMode">{{ category.category }}</span>
+            <input 
+              *ngIf="isEditMode" 
+              type="text" 
+              class="form-control" 
+              [(ngModel)]="category.category"
+            >
+          </td>
+          <td>
+            <span *ngIf="!isEditMode">{{ category.percentage }}%</span>
+            <div *ngIf="isEditMode" class="input-group">
+              <input 
+                type="number" 
+                class="form-control" 
+                [(ngModel)]="category.percentage"
+                (ngModelChange)="updatePercentage(i, $event)"
+                min="0" 
+                max="100"
+              >
+              <span class="input-group-text">%</span>
+            </div>
+          </td>
+          <td *ngIf="isEditMode">
+            {{ category.amount | number:'1.2-2' }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  
+  <div class="mt-4">
+    <div class="row">
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Total Spending</h5>
+            <p class="card-text display-6" *ngIf="!isEditMode">{{ totalSpending | number:'1.2-2' }}</p>
+            <div *ngIf="isEditMode" class="input-group">
+              <span class="input-group-text"></span>
+              <input 
+                type="number" 
+                class="form-control form-control-lg" 
+                [(ngModel)]="totalSpending"
+                (ngModelChange)="onTotalSpendingChange()"
+                min="0"
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Budget Remaining</h5>
+            <p class="card-text display-6 text-success" *ngIf="!isEditMode">{{ budgetRemaining | number:'1.2-2' }}</p>
+            <div *ngIf="isEditMode">
+              <label class="form-label">Budget Total:</label>
+              <div class="input-group mb-2">
+                <span class="input-group-text"></span>
+                <input 
+                  type="number" 
+                  class="form-control" 
+                  [(ngModel)]="budgetTotal"
+                  min="0"
+                >
+              </div>
+              <p class="text-success">Remaining: {{ budgetRemaining | number:'1.2-2' }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,132 @@
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>📊 Monthly Salary</h2>
+    <button class="btn btn-outline-primary btn-sm" (click)="toggleEditMode()">
+      ✏️ {{ isEditMode ? 'Save' : 'Edit' }}
+    </button>
+  </div>
+  
+  <div class="row mt-4">
+    <div class="col-md-4">
+      <div class="card text-center">
+        <div class="card-body">
+          <h5 class="card-title text-success">Total Income</h5>
+          <h3 class="text-success" *ngIf="!isEditMode">₹ {{ totalIncome | number }}</h3>
+          <div *ngIf="isEditMode">
+            <input 
+              type="number" 
+              class="form-control text-center" 
+              [(ngModel)]="totalIncome"
+              style="font-size: 1.5rem; font-weight: bold; color: #28a745;"
+            >
+          </div>
+          <p class="text-muted">This Month</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card text-center">
+        <div class="card-body">
+          <h5 class="card-title text-danger">Total Expenses</h5>
+          <h3 class="text-danger" *ngIf="!isEditMode">₹ {{ totalExpenses | number }}</h3>
+          <div *ngIf="isEditMode">
+            <input 
+              type="number" 
+              class="form-control text-center" 
+              [(ngModel)]="totalExpenses"
+              style="font-size: 1.5rem; font-weight: bold; color: #dc3545;"
+            >
+          </div>
+          <p class="text-muted">This Month</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card text-center">
+        <div class="card-body">
+          <h5 class="card-title text-info">Remaining</h5>
+          <h3 class="text-info">₹ {{ remaining | number }}</h3>
+          <p class="text-muted">Available</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Additional Summary Section -->
+  <div class="row mt-4">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h5 class="mb-0">Financial Summary</h5>
+          <button class="btn btn-outline-secondary btn-sm" (click)="toggleDetailEdit()">
+            {{ isDetailEditMode ? 'Save Details' : 'Edit Details' }}
+          </button>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <h6>Income Sources:</h6>
+              <ul class="list-unstyled">
+                <li *ngIf="!isDetailEditMode">💼 Salary: ₹ {{ salaryAmount | number }}</li>
+                <li *ngIf="isDetailEditMode">
+                  💼 Salary: ₹ 
+                  <input 
+                    type="number" 
+                    class="form-control d-inline-block" 
+                    style="width: 100px;" 
+                    [(ngModel)]="salaryAmount"
+                  >
+                </li>
+                <li *ngIf="!isDetailEditMode">💰 Freelance: ₹ {{ freelanceAmount | number }}</li>
+                <li *ngIf="isDetailEditMode">
+                  💰 Freelance: ₹ 
+                  <input 
+                    type="number" 
+                    class="form-control d-inline-block" 
+                    style="width: 100px;" 
+                    [(ngModel)]="freelanceAmount"
+                  >
+                </li>
+              </ul>
+            </div>
+            <div class="col-md-6">
+              <h6>Major Expenses:</h6>
+              <ul class="list-unstyled">
+                <li *ngIf="!isDetailEditMode">🏠 Rent: ₹ {{ rentAmount | number }}</li>
+                <li *ngIf="isDetailEditMode">
+                  🏠 Rent: ₹ 
+                  <input 
+                    type="number" 
+                    class="form-control d-inline-block" 
+                    style="width: 100px;" 
+                    [(ngModel)]="rentAmount"
+                  >
+                </li>
+                <li *ngIf="!isDetailEditMode">🍽️ Food: ₹ {{ foodAmount | number }}</li>
+                <li *ngIf="isDetailEditMode">
+                  🍽️ Food: ₹ 
+                  <input 
+                    type="number" 
+                    class="form-control d-inline-block" 
+                    style="width: 100px;" 
+                    [(ngModel)]="foodAmount"
+                  >
+                </li>
+                <li *ngIf="!isDetailEditMode">🚗 Transport: ₹ {{ transportAmount | number }}</li>
+                <li *ngIf="isDetailEditMode">
+                  🚗 Transport: ₹ 
+                  <input 
+                    type="number" 
+                    class="form-control d-inline-block" 
+                    style="width: 100px;" 
+                    [(ngModel)]="transportAmount"
+                  >
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,48 @@
+.spending-table {
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.spending-table th {
+  background-color: #f8f9fa;
+  font-weight: bold;
+  color: #2c5f5f;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.spending-table td {
+  font-weight: 500;
+  font-size: 1rem;
+  padding: 12px;
+}
+
+.spending-table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+.card {
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  border: none;
+  margin-bottom: 20px;
+}
+
+.card-title {
+  font-size: 1.2rem;
+  color: #2c5f5f;
+  margin-bottom: 10px;
+}
+
+.btn-outline-primary {
+  color: #2c5f5f;
+  border-color: #2c5f5f;
+}
+
+.btn-outline-primary:hover {
+  background-color: #2c5f5f;
+  border-color: #2c5f5f;
+}
+
+h2 {
+  color: #2c5f5f;
+}

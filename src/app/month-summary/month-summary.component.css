@@ -1,0 +1,56 @@
+.month-table {
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.month-table th {
+  background-color: #f8f9fa;
+  font-weight: bold;
+  color: #2c5f5f;
+  text-align: center;
+  padding: 12px;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.month-table td {
+  font-weight: 600;
+  font-size: 1.1rem;
+  text-align: center;
+  padding: 15px;
+  color: #2c5f5f;
+}
+
+.month-table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+.card {
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  border: none;
+  margin-bottom: 20px;
+}
+
+.card-title {
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+}
+
+.btn-outline-primary {
+  color: #2c5f5f;
+  border-color: #2c5f5f;
+}
+
+.btn-outline-primary:hover {
+  background-color: #2c5f5f;
+  border-color: #2c5f5f;
+}
+
+h2 {
+  color: #2c5f5f;
+}
+
+.table-responsive {
+  border-radius: 8px;
+  overflow: hidden;
+}

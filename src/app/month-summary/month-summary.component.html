@@ -1,0 +1,63 @@
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>📊 Month Summary:</h2>
+    <button class="btn btn-outline-primary btn-sm" (click)="toggleEditMode()">
+      ✏️ {{ isEditMode ? 'Save' : 'Edit' }}
+    </button>
+  </div>
+  
+  <div class="table-responsive">
+    <table class="table table-bordered month-table">
+      <thead>
+        <tr>
+          <th *ngFor="let month of monthlyData" scope="col">{{ month.shortMonth }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td *ngFor="let month of monthlyData; let i = index">
+            <span *ngIf="!isEditMode">{{ formatAmount(month.amount) }}</span>
+            <div *ngIf="isEditMode && month.shortMonth !== '...'" class="input-group input-group-sm">
+              <span class="input-group-text">₹</span>
+              <input 
+                type="number" 
+                class="form-control" 
+                [(ngModel)]="month.amount"
+                min="0"
+                style="font-size: 0.875rem;"
+              >
+            </div>
+            <span *ngIf="isEditMode && month.shortMonth === '...'">{{ formatAmount(month.amount) }}</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="row mt-4">
+    <div class="col-md-4">
+      <div class="card text-center">
+        <div class="card-body">
+          <h5 class="card-title text-primary">Total This Year</h5>
+          <h3 class="text-primary">₹{{ totalThisYear | number }}</h3>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card text-center">
+        <div class="card-body">
+          <h5 class="card-title text-success">Average Monthly</h5>
+          <h3 class="text-success">₹{{ averageMonthly | number:'1.0-0' }}</h3>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card text-center">
+        <div class="card-body">
+          <h5 class="card-title text-info">Highest Month</h5>
+          <h3 class="text-info">₹{{ highestMonth.amount | number }} ({{ highestMonth.month }})</h3>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
