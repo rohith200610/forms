@@ -1,0 +1,214 @@
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>👤 My Profile</h2>
+    <div>
+      <button *ngIf="isEditMode" class="btn btn-outline-secondary me-2" (click)="cancelEdit()">
+        <i class="fas fa-times me-1"></i>Cancel
+      </button>
+      <button class="btn btn-primary" (click)="toggleEditMode()">
+        <i class="fas fa-edit me-1" *ngIf="!isEditMode"></i>
+        <i class="fas fa-save me-1" *ngIf="isEditMode"></i>
+        {{ isEditMode ? 'Save Changes' : 'Edit Profile' }}
+      </button>
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- Profile Picture and Basic Info -->
+    <div class="col-md-4">
+      <div class="card profile-card">
+        <div class="card-body text-center">
+          <div class="profile-picture-container mb-3">
+            <img [src]="userProfile.profilePicture" 
+                 alt="Profile Picture" 
+                 class="profile-picture">
+            <div *ngIf="isEditMode" class="picture-overlay">
+              <input type="file" 
+                     id="profilePicture" 
+                     accept="image/*" 
+                     (change)="onImageChange($event)"
+                     style="display: none;">
+              <label for="profilePicture" class="btn btn-sm btn-light">
+                <i class="fas fa-camera"></i>
+              </label>
+            </div>
+          </div>
+          
+          <div *ngIf="!isEditMode">
+            <h4 class="mb-1">{{ userProfile.name }}</h4>
+            <p class="text-muted mb-2">{{ userProfile.profession }}</p>
+            <p class="text-muted">
+              <i class="fas fa-envelope me-1"></i>
+              {{ userProfile.email }}
+            </p>
+          </div>
+
+          <div *ngIf="isEditMode">
+            <div class="mb-3">
+              <input type="text" 
+                     class="form-control text-center" 
+                     [(ngModel)]="userProfile.name"
+                     placeholder="Full Name">
+            </div>
+            <div class="mb-3">
+              <input type="text" 
+                     class="form-control text-center" 
+                     [(ngModel)]="userProfile.profession"
+                     placeholder="Profession">
+            </div>
+          </div>
+
+          <!-- Membership Info -->
+          <div class="membership-info mt-3">
+            <div class="row text-center">
+              <div class="col-6">
+                <div class="stat-item">
+                  <h6 class="text-primary">Member Since</h6>
+                  <small>{{ userProfile.joinDate | date:'MMM yyyy' }}</small>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="stat-item">
+                  <h6 class="text-success">Duration</h6>
+                  <small>{{ membershipDuration }}</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Stats Card -->
+      <div class="card mt-3">
+        <div class="card-header">
+          <h6 class="mb-0">💰 Financial Overview</h6>
+        </div>
+        <div class="card-body">
+          <div class="stat-row">
+            <span class="stat-label">Total Expenses:</span>
+            <span class="stat-value text-danger">₹{{ userProfile.totalExpenses | number }}</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Total Savings:</span>
+            <span class="stat-value text-success">₹{{ userProfile.totalSavings | number }}</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Savings Rate:</span>
+            <span class="stat-value text-info">{{ savingsRate | number:'1.1-1' }}%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Profile Details Form -->
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">📋 Profile Details</h5>
+        </div>
+        <div class="card-body">
+          <form>
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label class="form-label">Full Name</label>
+                <input type="text" 
+                       class="form-control" 
+                       [(ngModel)]="userProfile.name"
+                       name="name"
+                       [readonly]="!isEditMode">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Email Address</label>
+                <input type="email" 
+                       class="form-control" 
+                       [(ngModel)]="userProfile.email"
+                       name="email"
+                       [readonly]="!isEditMode">
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label class="form-label">Phone Number</label>
+                <input type="tel" 
+                       class="form-control" 
+                       [(ngModel)]="userProfile.phone"
+                       name="phone"
+                       [readonly]="!isEditMode">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Profession</label>
+                <input type="text" 
+                       class="form-control" 
+                       [(ngModel)]="userProfile.profession"
+                       name="profession"
+                       [readonly]="!isEditMode">
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label class="form-label">Monthly Income</label>
+                <div class="input-group">
+                  <span class="input-group-text">₹</span>
+                  <input type="number" 
+                         class="form-control" 
+                         [(ngModel)]="userProfile.monthlyIncome"
+                         name="monthlyIncome"
+                         [readonly]="!isEditMode">
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Preferred Currency</label>
+                <select class="form-control" 
+                        [(ngModel)]="userProfile.currency"
+                        name="currency"
+                        [disabled]="!isEditMode">
+                  <option value="INR">Indian Rupee (₹)</option>
+                  <option value="USD">US Dollar ($)</option>
+                  <option value="EUR">Euro (€)</option>
+                  <option value="GBP">British Pound (£)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Additional Information -->
+            <div class="card mt-4" *ngIf="!isEditMode">
+              <div class="card-header">
+                <h6 class="mb-0">📊 Account Statistics</h6>
+              </div>
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-md-3">
+                    <div class="text-center">
+                      <h4 class="text-primary">{{ userProfile.totalExpenses + userProfile.totalSavings | number }}</h4>
+                      <small class="text-muted">Total Money Managed</small>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="text-center">
+                      <h4 class="text-success">{{ savingsRate | number:'1.0-0' }}%</h4>
+                      <small class="text-muted">Savings Rate</small>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="text-center">
+                      <h4 class="text-info">{{ userProfile.monthlyIncome | number }}</h4>
+                      <small class="text-muted">Monthly Income</small>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="text-center">
+                      <h4 class="text-warning">{{ membershipDuration.split(' ')[0] }}</h4>
+                      <small class="text-muted">Months Active</small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

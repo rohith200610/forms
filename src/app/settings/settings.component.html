@@ -1,0 +1,256 @@
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>⚙️ Settings</h2>
+    <div>
+      <button class="btn btn-outline-secondary me-2" (click)="resetSettings()">
+        <i class="fas fa-undo me-1"></i>Reset
+      </button>
+      <button class="btn btn-primary" (click)="saveSettings()">
+        <i class="fas fa-save me-1"></i>Save Changes
+      </button>
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- Appearance Settings -->
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">🎨 Appearance</h5>
+        </div>
+        <div class="card-body">
+          <div class="mb-3">
+            <label class="form-label">Theme</label>
+            <div class="theme-options">
+              <div *ngFor="let theme of themes" class="form-check theme-option">
+                <input class="form-check-input" 
+                       type="radio" 
+                       [value]="theme.value"
+                       [(ngModel)]="settings.theme"
+                       (change)="onThemeChange()"
+                       [id]="'theme-' + theme.value">
+                <label class="form-check-label" [for]="'theme-' + theme.value">
+                  <i [class]="theme.icon + ' me-2'"></i>
+                  {{ theme.label }}
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Currency</label>
+            <select class="form-control" [(ngModel)]="settings.currency">
+              <option *ngFor="let currency of currencies" [value]="currency.value">
+                {{ currency.label }}
+              </option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Language</label>
+            <select class="form-control" [(ngModel)]="settings.language">
+              <option *ngFor="let language of languages" [value]="language.value">
+                {{ language.label }}
+              </option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Privacy Settings -->
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">🔒 Privacy & Security</h5>
+        </div>
+        <div class="card-body">
+          <div class="mb-3">
+            <label class="form-label">Profile Visibility</label>
+            <select class="form-control" [(ngModel)]="settings.privacy.profileVisibility">
+              <option value="private">Private</option>
+              <option value="friends">Friends Only</option>
+              <option value="public">Public</option>
+            </select>
+          </div>
+
+          <div class="form-check mb-3">
+            <input class="form-check-input" 
+                   type="checkbox" 
+                   [(ngModel)]="settings.privacy.dataSharing"
+                   id="dataSharing">
+            <label class="form-check-label" for="dataSharing">
+              Allow data sharing for service improvement
+            </label>
+          </div>
+
+          <div class="form-check mb-3">
+            <input class="form-check-input" 
+                   type="checkbox" 
+                   [(ngModel)]="settings.privacy.analytics"
+                   id="analytics">
+            <label class="form-check-label" for="analytics">
+              Enable usage analytics
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notifications Settings -->
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">🔔 Notifications</h5>
+        </div>
+        <div class="card-body">
+          <div class="form-check mb-3">
+            <input class="form-check-input" 
+                   type="checkbox" 
+                   [(ngModel)]="settings.notifications.email"
+                   id="emailNotifications">
+            <label class="form-check-label" for="emailNotifications">
+              <i class="fas fa-envelope me-2"></i>Email Notifications
+            </label>
+          </div>
+
+          <div class="form-check mb-3">
+            <input class="form-check-input" 
+                   type="checkbox" 
+                   [(ngModel)]="settings.notifications.push"
+                   id="pushNotifications">
+            <label class="form-check-label" for="pushNotifications">
+              <i class="fas fa-bell me-2"></i>Push Notifications
+            </label>
+          </div>
+
+          <div class="form-check mb-3">
+            <input class="form-check-input" 
+                   type="checkbox" 
+                   [(ngModel)]="settings.notifications.expenseReminders"
+                   id="expenseReminders">
+            <label class="form-check-label" for="expenseReminders">
+              <i class="fas fa-clock me-2"></i>Expense Reminders
+            </label>
+          </div>
+
+          <div class="form-check mb-3">
+            <input class="form-check-input" 
+                   type="checkbox" 
+                   [(ngModel)]="settings.notifications.monthlyReports"
+                   id="monthlyReports">
+            <label class="form-check-label" for="monthlyReports">
+              <i class="fas fa-chart-bar me-2"></i>Monthly Reports
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Preferences Settings -->
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">⚡ Preferences</h5>
+        </div>
+        <div class="card-body">
+          <div class="mb-3">
+            <label class="form-label">Default Expense Category</label>
+            <select class="form-control" [(ngModel)]="settings.preferences.defaultExpenseCategory">
+              <option *ngFor="let category of expenseCategories" [value]="category">
+                {{ category }}
+              </option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Data Retention</label>
+            <select class="form-control" [(ngModel)]="settings.preferences.dataRetention">
+              <option *ngFor="let option of dataRetentionOptions" [value]="option.value">
+                {{ option.label }}
+              </option>
+            </select>
+          </div>
+
+          <div class="form-check mb-3">
+            <input class="form-check-input" 
+                   type="checkbox" 
+                   [(ngModel)]="settings.preferences.autoBackup"
+                   id="autoBackup">
+            <label class="form-check-label" for="autoBackup">
+              <i class="fas fa-cloud-upload-alt me-2"></i>Auto Backup
+            </label>
+          </div>
+
+          <div class="form-check mb-3">
+            <input class="form-check-input" 
+                   type="checkbox" 
+                   [(ngModel)]="settings.preferences.budgetWarnings"
+                   id="budgetWarnings">
+            <label class="form-check-label" for="budgetWarnings">
+              <i class="fas fa-exclamation-triangle me-2"></i>Budget Warning Alerts
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Account Management -->
+  <div class="row mt-4">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">👤 Account Management</h5>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-4">
+              <div class="account-action">
+                <i class="fas fa-download text-info"></i>
+                <div>
+                  <h6>Export Data</h6>
+                  <p class="text-muted mb-2">Download all your expense data</p>
+                  <button class="btn btn-outline-info btn-sm" (click)="exportData()">
+                    <i class="fas fa-download me-1"></i>Export
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="account-action">
+                <i class="fas fa-sync text-warning"></i>
+                <div>
+                  <h6>Sync Settings</h6>
+                  <p class="text-muted mb-2">Synchronize with cloud storage</p>
+                  <button class="btn btn-outline-warning btn-sm">
+                    <i class="fas fa-sync me-1"></i>Sync Now
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="account-action">
+                <i class="fas fa-trash text-danger"></i>
+                <div>
+                  <h6>Delete Account</h6>
+                  <p class="text-muted mb-2">Permanently delete your account</p>
+                  <button class="btn btn-outline-danger btn-sm" (click)="deleteAccount()">
+                    <i class="fas fa-trash me-1"></i>Delete
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Info -->
+  <div class="row mt-4">
+    <div class="col-12">
+      <div class="alert alert-info">
+        <i class="fas fa-info-circle me-2"></i>
+        <strong>Note:</strong> Some settings may require you to restart the application to take effect. 
+        Your preferences are automatically saved and synchronized across all your devices.
+      </div>
+    </div>
+  </div>
+</div>

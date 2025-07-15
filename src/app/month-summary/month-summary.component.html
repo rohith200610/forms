@@ -1,61 +1,186 @@
 <div class="container mt-4">
   <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>📊 Month Summary:</h2>
+    <h2>📊 Monthly Summary {{ currentYear }}</h2>
     <button class="btn btn-outline-primary btn-sm" (click)="toggleEditMode()">
-      ✏️ {{ isEditMode ? 'Save' : 'Edit' }}
+      ✏️ {{ isEditMode ? 'Save Changes' : 'Edit Amounts' }}
     </button>
   </div>
   
-  <div class="table-responsive">
-    <table class="table table-bordered month-table">
-      <thead>
-        <tr>
-          <th *ngFor="let month of monthlyData" scope="col">{{ month.shortMonth }}</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td *ngFor="let month of monthlyData; let i = index">
-            <span *ngIf="!isEditMode">{{ formatAmount(month.amount) }}</span>
-            <div *ngIf="isEditMode && month.shortMonth !== '...'" class="input-group input-group-sm">
-              <span class="input-group-text">₹</span>
-              <input 
-                type="number" 
-                class="form-control" 
-                [(ngModel)]="month.amount"
-                min="0"
-                style="font-size: 0.875rem;"
-              >
-            </div>
-            <span *ngIf="isEditMode && month.shortMonth === '...'">{{ formatAmount(month.amount) }}</span>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <div class="row mt-4">
-    <div class="col-md-4">
-      <div class="card text-center">
+  <!-- Year Overview Cards -->
+  <div class="row mb-4">
+    <div class="col-md-3">
+      <div class="card text-center summary-card">
         <div class="card-body">
           <h5 class="card-title text-primary">Total This Year</h5>
-          <h3 class="text-primary">₹{{ totalThisYear | number }}</h3>
+          <h3 class="text-primary">{{ formatFullAmount(totalThisYear) }}</h3>
+          <small class="text-muted">{{ completedMonths }} months completed</small>
         </div>
       </div>
     </div>
-    <div class="col-md-4">
-      <div class="card text-center">
+    <div class="col-md-3">
+      <div class="card text-center summary-card">
         <div class="card-body">
           <h5 class="card-title text-success">Average Monthly</h5>
-          <h3 class="text-success">₹{{ averageMonthly | number:'1.0-0' }}</h3>
+          <h3 class="text-success">{{ formatFullAmount(averageMonthly) }}</h3>
+          <small class="text-muted">Based on completed months</small>
         </div>
       </div>
     </div>
-    <div class="col-md-4">
-      <div class="card text-center">
+    <div class="col-md-3">
+      <div class="card text-center summary-card">
         <div class="card-body">
           <h5 class="card-title text-info">Highest Month</h5>
-          <h3 class="text-info">₹{{ highestMonth.amount | number }} ({{ highestMonth.month }})</h3>
+          <h3 class="text-info">{{ formatFullAmount(highestMonth.amount) }}</h3>
+          <small class="text-muted">{{ highestMonth.month }}</small>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card text-center summary-card">
+        <div class="card-body">
+          <h5 class="card-title text-warning">Projected Total</h5>
+          <h3 class="text-warning">{{ formatFullAmount(projectedYearlyTotal) }}</h3>
+          <small class="text-muted">If trend continues</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Monthly Data Table -->
+  <div class="card mb-4">
+    <div class="card-header">
+      <h5 class="mb-0">Monthly Breakdown</h5>
+    </div>
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover month-table mb-0">
+          <thead class="table-light">
+            <tr>
+              <th *ngFor="let month of monthlyData; let i = index" 
+                  scope="col" 
+                  [class]="'month-header month-' + getMonthStatus(i)"
+                  [style.border-left]="'4px solid ' + month.color">
+                {{ month.shortMonth }}
+                <i *ngIf="month.isCurrentMonth" class="fas fa-star text-warning ms-1" title="Current Month"></i>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td *ngFor="let month of monthlyData; let i = index" 
+                  [class]="'month-cell month-' + getMonthStatus(i)"
+                  [style.border-left]="'4px solid ' + month.color">
+                <div *ngIf="!isEditMode" class="amount-display">
+                  <span class="amount-value" [style.color]="month.color" 
+                        [class.future-month]="getMonthStatus(i) === 'upcoming'">
+                    <span *ngIf="getMonthStatus(i) === 'upcoming'; else showAmount">
+                      <i class="fas fa-clock text-muted"></i>
+                      <small class="text-muted d-block">Not Started</small>
+                    </span>
+                    <ng-template #showAmount>
+                      {{ formatAmount(month.amount) }}
+                    </ng-template>
+                  </span>
+                  <div class="amount-full" *ngIf="month.amount > 0">
+                    {{ formatFullAmount(month.amount) }}
+                  </div>
+                  <div class="amount-full text-muted" *ngIf="month.amount === 0 && getMonthStatus(i) === 'upcoming'">
+                    <small>Planned: {{ formatFullAmount(20000) }}</small>
+                  </div>
+                </div>
+                <div *ngIf="isEditMode" class="edit-input">
+                  <div class="input-group input-group-sm">
+                    <span class="input-group-text">₹</span>
+                    <input 
+                      type="number" 
+                      class="form-control" 
+                      [(ngModel)]="month.amount"
+                      min="0"
+                      step="1000"
+                      [placeholder]="month.month"
+                      [disabled]="getMonthStatus(i) === 'upcoming'"
+                    >
+                  </div>
+                  <small *ngIf="getMonthStatus(i) === 'upcoming'" class="text-muted">
+                    Future month - edit when reached
+                  </small>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Monthly Cards View (Alternative) -->
+  <div class="card">
+    <div class="card-header">
+      <h5 class="mb-0">Month-wise Cards View</h5>
+    </div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-3 col-sm-6 mb-3" *ngFor="let month of monthlyData; let i = index">
+          <div class="card month-card" 
+               [class]="'border-' + getMonthStatus(i)"
+               [style.border-left]="'5px solid ' + month.color">
+            <div class="card-body text-center p-3">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <h6 class="card-title mb-0" [style.color]="month.color">
+                  {{ month.month }}
+                </h6>
+                <i *ngIf="month.isCurrentMonth" 
+                   class="fas fa-star text-warning" 
+                   title="Current Month"></i>
+              </div>
+              
+              <div *ngIf="!isEditMode">
+                <div *ngIf="getMonthStatus(i) === 'upcoming'; else showCardAmount">
+                  <h4 class="mb-1 text-muted">
+                    <i class="fas fa-clock"></i>
+                  </h4>
+                  <small class="text-muted">Not Started</small>
+                  <div class="mt-1">
+                    <small class="text-info">Target: ₹20,000</small>
+                  </div>
+                </div>
+                <ng-template #showCardAmount>
+                  <h4 class="mb-1" [style.color]="month.color">
+                    {{ formatAmount(month.amount) }}
+                  </h4>
+                  <small class="text-muted">
+                    {{ formatFullAmount(month.amount) }}
+                  </small>
+                </ng-template>
+              </div>
+              
+              <div *ngIf="isEditMode" class="edit-card-input">
+                <div class="input-group input-group-sm">
+                  <span class="input-group-text">₹</span>
+                  <input 
+                    type="number" 
+                    class="form-control text-center" 
+                    [(ngModel)]="month.amount"
+                    min="0"
+                    step="1000"
+                    [disabled]="getMonthStatus(i) === 'upcoming'"
+                  >
+                </div>
+                <small *ngIf="getMonthStatus(i) === 'upcoming'" class="text-muted d-block mt-1">
+                  Future month
+                </small>
+              </div>
+              
+              <div class="mt-2">
+                <span class="badge" 
+                      [class]="'badge-' + getMonthStatus(i)"
+                      [style.background-color]="month.color + '20'"
+                      [style.color]="month.color">
+                  {{ getMonthStatus(i) | titlecase }}
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

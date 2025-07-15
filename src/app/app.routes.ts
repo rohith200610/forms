@@ -5,6 +5,9 @@ import { MonthlySummaryComponent } from './monthly-summary/monthly-summary.compo
 import { SpendingOverviewComponent } from './spending-overview/spending-overview.component';
 import { MonthSummaryComponent } from './month-summary/month-summary.component';
 import { ExpenseListComponent } from './expense-list/expense-list.component';
+import { ProfileComponent } from './profile/profile.component';
+import { SettingsComponent } from './settings/settings.component';
+import { HelpComponent } from './help/help.component';
 import { LayoutComponent } from './layout/layout.component';
 
 export const routes: Routes = [
@@ -18,7 +21,10 @@ export const routes: Routes = [
       { path: 'monthly-summary', component: MonthlySummaryComponent },
       { path: 'spending-overview', component: SpendingOverviewComponent },
       { path: 'month-summary', component: MonthSummaryComponent },
-      { path: 'expense-list', component: ExpenseListComponent }
+      { path: 'expense-list', component: ExpenseListComponent },
+      { path: 'profile', component: ProfileComponent },
+      { path: 'settings', component: SettingsComponent },
+      { path: 'help', component: HelpComponent }
     ]
   },
   { path: '**', redirectTo: '/login' }
