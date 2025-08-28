@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -31,8 +31,11 @@ interface AppSettings {
   templateUrl: './settings.component.html',
   styleUrl: './settings.component.css'
 })
-export class SettingsComponent {
-  settings: AppSettings = {
+export class SettingsComponent implements OnInit {
+  private readonly STORAGE_KEY = 'appSettings';
+
+  // Default settings
+  private defaultSettings: AppSettings = {
     theme: 'auto',
     currency: 'INR',
     language: 'en',
@@ -48,12 +51,45 @@ export class SettingsComponent {
       analytics: true
     },
     preferences: {
-      defaultExpenseCategory: 'Food',
+      defaultExpenseCategory: 'Food & Dining',
       autoBackup: true,
       dataRetention: '2years',
       budgetWarnings: true
     }
   };
+
+  settings: AppSettings = { ...this.defaultSettings };
+
+  ngOnInit() {
+    this.loadSettings();
+  }
+
+  // Load settings from localStorage
+  loadSettings() {
+    try {
+      const savedSettings = localStorage.getItem(this.STORAGE_KEY);
+      if (savedSettings) {
+        this.settings = { ...this.defaultSettings, ...JSON.parse(savedSettings) };
+        this.applyTheme();
+        console.log('Settings loaded from localStorage');
+      }
+    } catch (error) {
+      console.error('Error loading settings from localStorage:', error);
+      this.settings = { ...this.defaultSettings };
+    }
+  }
+
+  // Save settings to localStorage
+  saveToStorage() {
+    try {
+      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.settings));
+      console.log('Settings saved to localStorage successfully');
+      return true;
+    } catch (error) {
+      console.error('Error saving settings to localStorage:', error);
+      return false;
+    }
+  }
 
   themes = [
     { value: 'light', label: 'Light Theme', icon: 'fas fa-sun' },
@@ -97,41 +133,25 @@ export class SettingsComponent {
   ];
 
   saveSettings() {
-    // Here you would typically call an API to save settings
-    console.log('Settings saved:', this.settings);
-    
-    // Show success message (you could use a toast notification)
-    alert('Settings saved successfully!');
-    
-    // Apply theme change if needed
-    this.applyTheme();
+    // Save to localStorage
+    const saved = this.saveToStorage();
+    if (saved) {
+      console.log('Settings saved:', this.settings);
+      
+      // Show success message (you could use a toast notification)
+      alert('Settings saved successfully!');
+      
+      // Apply theme change if needed
+      this.applyTheme();
+    } else {
+      alert('Failed to save settings. Please try again.');
+    }
   }
 
   resetSettings() {
     if (confirm('Are you sure you want to reset all settings to default? This action cannot be undone.')) {
       // Reset to default values
-      this.settings = {
-        theme: 'auto',
-        currency: 'INR',
-        language: 'en',
-        notifications: {
-          email: true,
-          push: true,
-          expenseReminders: true,
-          monthlyReports: true
-        },
-        privacy: {
-          profileVisibility: 'private',
-          dataSharing: false,
-          analytics: true
-        },
-        preferences: {
-          defaultExpenseCategory: 'Food & Dining',
-          autoBackup: true,
-          dataRetention: '2years',
-          budgetWarnings: true
-        }
-      };
+      this.settings = { ...this.defaultSettings };
       
       this.saveSettings();
     }
@@ -159,5 +179,7 @@ export class SettingsComponent {
 
   onThemeChange() {
     this.applyTheme();
+    // Auto-save when theme changes
+    this.saveToStorage();
   }
 }

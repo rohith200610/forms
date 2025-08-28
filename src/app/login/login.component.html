@@ -2,7 +2,20 @@
   <div class="login-form">
     <h1>Welcome to Personal Expense Tracker</h1>
     
-    <form (ngSubmit)="onLogin()" #loginForm="ngForm">
+    <!-- Error Message -->
+    <div *ngIf="errorMessage" class="alert alert-danger">
+      {{ errorMessage }}
+    </div>
+    
+    <!-- Loading Indicator -->
+    <div *ngIf="isLoading" class="text-center mb-3">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p class="mt-2">Authenticating...</p>
+    </div>
+    
+    <form (ngSubmit)="onLogin()" #loginForm="ngForm" [class.loading]="isLoading">
       <div class="form-group">
         <label for="email">Email <span class="required">*</span></label>
         <input
@@ -15,6 +28,7 @@
           email
           class="form-control"
           [class.error]="emailInput.invalid && emailInput.touched"
+          [disabled]="isLoading"
         >
         <div class="error-message" *ngIf="emailInput.invalid && emailInput.touched">
           <span *ngIf="emailInput.errors?.['required']">Valid email required</span>
@@ -31,17 +45,50 @@
           [(ngModel)]="password"
           #passwordInput="ngModel"
           required
+          minlength="4"
           class="form-control"
           [class.error]="passwordInput.invalid && passwordInput.touched"
+          [disabled]="isLoading"
         >
         <div class="error-message" *ngIf="passwordInput.invalid && passwordInput.touched">
           <span *ngIf="passwordInput.errors?.['required']">Password is required</span>
+          <span *ngIf="passwordInput.errors?.['minlength']">Password must be at least 4 characters long</span>
         </div>
+        <small class="text-muted">Minimum 4 characters required</small>
       </div>
 
-      <button type="submit" class="login-button" [disabled]="loginForm.invalid">
-        Login
+      <button type="submit" class="login-button" [disabled]="loginForm.invalid || isLoading">
+        <span *ngIf="!isLoading">Login</span>
+        <span *ngIf="isLoading">
+          <i class="fas fa-spinner fa-spin"></i> Logging in...
+        </span>
       </button>
     </form>
+
+    <!-- Demo Login Buttons -->
+    <div class="demo-logins mt-4">
+      <h6>Demo Accounts:</h6>
+      <div class="d-flex gap-2 mt-2">
+        <button 
+          type="button" 
+          class="btn btn-outline-primary btn-sm" 
+          (click)="quickLogin('admin')"
+          [disabled]="isLoading">
+          Login as Admin
+        </button>
+        <button 
+          type="button" 
+          class="btn btn-outline-secondary btn-sm" 
+          (click)="quickLogin('user')"
+          [disabled]="isLoading">
+          Login as User
+        </button>
+      </div>
+      <small class="text-muted d-block mt-2">
+        <strong>Demo Accounts:</strong><br>
+        Admin: admin&#64;expense.com | User: user&#64;expense.com<br>
+        <strong>Or use any email with password (4+ characters)</strong>
+      </small>
+    </div>
   </div>
 </div>

@@ -18,16 +18,20 @@ interface Expense {
   styleUrl: './expense-list.component.css'
 })
 export class ExpenseListComponent implements OnInit {
+  private readonly STORAGE_KEY = 'expensesList';
+  
   searchTerm: string = '';
   showAddForm: boolean = false;
   isEditMode: boolean = false;
   
-  expenses: Expense[] = [
+  // Default expenses
+  private defaultExpenses: Expense[] = [
     { title: 'Coffee', amount: 150, date: '2025-06-26', category: 'Food', type: 'Expense' },
     { title: 'Salary', amount: 20000, date: '2025-06-25', category: 'Income', type: 'Income' },
     { title: 'Electricity', amount: 1200, date: '2025-06-24', category: 'Bills', type: 'Expense' }
   ];
 
+  expenses: Expense[] = [...this.defaultExpenses];
   filteredExpenses: Expense[] = [...this.expenses];
 
   newExpense: Expense = {
@@ -41,12 +45,42 @@ export class ExpenseListComponent implements OnInit {
   constructor(private route: ActivatedRoute) {}
 
   ngOnInit() {
+    this.loadExpenses();
+    
     // Check if we should show the add form based on query parameter
     this.route.queryParams.subscribe(params => {
       if (params['showAddForm'] === 'true') {
         this.showAddForm = true;
       }
     });
+  }
+
+  // Load expenses from localStorage
+  loadExpenses() {
+    try {
+      const savedExpenses = localStorage.getItem(this.STORAGE_KEY);
+      if (savedExpenses) {
+        this.expenses = JSON.parse(savedExpenses);
+        this.filteredExpenses = [...this.expenses];
+        console.log('Expenses loaded from localStorage');
+      }
+    } catch (error) {
+      console.error('Error loading expenses from localStorage:', error);
+      this.expenses = [...this.defaultExpenses];
+      this.filteredExpenses = [...this.expenses];
+    }
+  }
+
+  // Save expenses to localStorage
+  saveToStorage() {
+    try {
+      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.expenses));
+      console.log('Expenses saved to localStorage successfully');
+      return true;
+    } catch (error) {
+      console.error('Error saving expenses to localStorage:', error);
+      return false;
+    }
   }
 
   get totalIncome(): number {
@@ -88,6 +122,7 @@ export class ExpenseListComponent implements OnInit {
     if (this.isFormValid()) {
       this.expenses.push({ ...this.newExpense });
       this.filteredExpenses = [...this.expenses];
+      this.saveToStorage(); // Save to localStorage
       this.resetNewExpense();
       this.showAddForm = false;
       console.log('Expense added successfully!');
@@ -121,6 +156,7 @@ export class ExpenseListComponent implements OnInit {
     this.isEditMode = !this.isEditMode;
     if (!this.isEditMode) {
       // Save changes when exiting edit mode
+      this.saveToStorage();
       console.log('Changes saved!');
     }
   }
@@ -129,6 +165,7 @@ export class ExpenseListComponent implements OnInit {
     if (confirm('Are you sure you want to delete this expense?')) {
       this.expenses.splice(index, 1);
       this.filteredExpenses = [...this.expenses];
+      this.saveToStorage(); // Save to localStorage
     }
   }
 

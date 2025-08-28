@@ -1,0 +1,209 @@
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>👥 User Management</h2>
+    <div class="d-flex gap-2 align-items-center">
+      <button class="btn btn-outline-warning btn-sm" (click)="resetDatabase()">
+        <i class="fas fa-undo me-1"></i>Reset Database
+      </button>
+      <span class="badge bg-primary fs-6">Total: {{ getTotalUsers() }}</span>
+      <span class="badge bg-warning text-dark fs-6">Admins: {{ getAdminCount() }}</span>
+      <span class="badge bg-info fs-6">Users: {{ getUserCount() }}</span>
+    </div>
+  </div>
+
+  <!-- Persistence Info -->
+  <div class="alert alert-info mb-4">
+    <i class="fas fa-info-circle me-2"></i>
+    <strong>Persistent Storage:</strong> All user management changes are automatically saved to your browser's local storage and will persist across page reloads and browser sessions.
+  </div>
+
+  <div class="row">
+    <!-- Users List -->
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">All Users</h5>
+        </div>
+        <div class="card-body">
+          <!-- Search -->
+          <div class="mb-3">
+            <div class="input-group">
+              <span class="input-group-text">
+                <i class="fas fa-search"></i>
+              </span>
+              <input 
+                type="text" 
+                class="form-control" 
+                placeholder="Search users by name, email, or role..."
+                [(ngModel)]="searchTerm"
+                (ngModelChange)="searchUsers()"
+              >
+            </div>
+          </div>
+
+          <!-- Users Table -->
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>User</th>
+                  <th>Email</th>
+                  <th>Role</th>
+                  <th>Permissions</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let user of filteredUsers" 
+                    [class.table-active]="selectedUser?.id === user.id"
+                    style="cursor: pointer;"
+                    (click)="selectUser(user)">
+                  <td>
+                    <div class="d-flex align-items-center">
+                      <i class="fas fa-user-circle fa-2x text-secondary me-2"></i>
+                      <div>
+                        <div class="fw-bold">{{ user.name }}</div>
+                        <small class="text-muted">ID: {{ user.id }}</small>
+                      </div>
+                    </div>
+                  </td>
+                  <td>{{ user.email }}</td>
+                  <td>
+                    <span [class]="getUserStatusClass(user)">
+                      {{ user.role | titlecase }}
+                    </span>
+                  </td>
+                  <td>
+                    <div class="d-flex flex-wrap gap-1">
+                      <span *ngFor="let permission of user.permissions" 
+                            [class]="getPermissionBadgeClass(permission)"
+                            class="badge badge-sm">
+                        {{ permission }}
+                      </span>
+                    </div>
+                  </td>
+                  <td>
+                    <button class="btn btn-sm btn-outline-danger" 
+                            (click)="deleteUser(user); $event.stopPropagation()"
+                            [disabled]="user.role === 'admin' && user.id === authService.getCurrentUser()?.id">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div *ngIf="filteredUsers.length === 0" class="text-center py-4">
+            <i class="fas fa-users fa-3x text-muted mb-3"></i>
+            <p class="text-muted">No users found matching your search criteria.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- User Details Panel -->
+    <div class="col-md-4">
+      <div class="card" *ngIf="selectedUser">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h5 class="mb-0">User Details</h5>
+          <div>
+            <button *ngIf="!isEditMode" 
+                    class="btn btn-sm btn-primary me-2" 
+                    (click)="editUser()">
+              <i class="fas fa-edit"></i> Edit
+            </button>
+            <button *ngIf="isEditMode" 
+                    class="btn btn-sm btn-success me-2" 
+                    (click)="saveUser()">
+              <i class="fas fa-save"></i> Save
+            </button>
+            <button *ngIf="isEditMode" 
+                    class="btn btn-sm btn-secondary" 
+                    (click)="cancelEdit()">
+              <i class="fas fa-times"></i> Cancel
+            </button>
+          </div>
+        </div>
+        <div class="card-body">
+          <!-- Profile Picture -->
+          <div class="text-center mb-3">
+            <i class="fas fa-user-circle fa-4x text-secondary"></i>
+          </div>
+
+          <!-- User Info -->
+          <div class="mb-3">
+            <label class="form-label">Name</label>
+            <input *ngIf="isEditMode" 
+                   type="text" 
+                   class="form-control" 
+                   [(ngModel)]="selectedUser.name">
+            <p *ngIf="!isEditMode" class="form-control-plaintext">{{ selectedUser.name }}</p>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input *ngIf="isEditMode" 
+                   type="email" 
+                   class="form-control" 
+                   [(ngModel)]="selectedUser.email">
+            <p *ngIf="!isEditMode" class="form-control-plaintext">{{ selectedUser.email }}</p>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Role</label>
+            <select *ngIf="isEditMode" 
+                    class="form-control" 
+                    [(ngModel)]="selectedUser.role"
+                    (ngModelChange)="onRoleChange()">
+              <option *ngFor="let role of availableRoles" [value]="role">
+                {{ role | titlecase }}
+              </option>
+            </select>
+            <p *ngIf="!isEditMode" class="form-control-plaintext">
+              <span [class]="getUserStatusClass(selectedUser)">
+                {{ selectedUser.role | titlecase }}
+              </span>
+            </p>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Permissions</label>
+            <div *ngIf="isEditMode" class="d-flex flex-column gap-2">
+              <div *ngFor="let permission of availablePermissions" class="form-check">
+                <input class="form-check-input" 
+                       type="checkbox" 
+                       [checked]="hasPermission(permission)"
+                       (change)="togglePermission(permission)"
+                       [id]="'perm-' + permission">
+                <label class="form-check-label" [for]="'perm-' + permission">
+                  {{ permission | titlecase }}
+                </label>
+              </div>
+            </div>
+            <div *ngIf="!isEditMode" class="d-flex flex-wrap gap-1">
+              <span *ngFor="let permission of selectedUser.permissions" 
+                    [class]="getPermissionBadgeClass(permission)"
+                    class="badge">
+                {{ permission }}
+              </span>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">User ID</label>
+            <p class="form-control-plaintext text-muted small">{{ selectedUser.id }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- No User Selected -->
+      <div class="card" *ngIf="!selectedUser">
+        <div class="card-body text-center py-5">
+          <i class="fas fa-hand-pointer fa-3x text-muted mb-3"></i>
+          <h6 class="text-muted">Select a user from the list to view details</h6>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

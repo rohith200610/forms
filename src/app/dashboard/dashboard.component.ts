@@ -17,7 +17,6 @@ export class DashboardComponent {
   }
 
   navigateToAddExpense() {
-    // Navigate to expense list and trigger add form
     this.router.navigate(['/expense-list'], { 
       queryParams: { showAddForm: 'true' } 
     });

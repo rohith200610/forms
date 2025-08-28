@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -21,10 +21,12 @@ interface UserProfile {
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.css'
 })
-export class ProfileComponent {
+export class ProfileComponent implements OnInit {
   isEditMode: boolean = false;
+  private readonly STORAGE_KEY = 'userProfile';
   
-  userProfile: UserProfile = {
+  // Default profile data
+  private defaultProfile: UserProfile = {
     name: 'John Doe',
     email: 'john.doe@example.com',
     phone: '+91 9876543210',
@@ -37,7 +39,49 @@ export class ProfileComponent {
     totalSavings: 75000
   };
 
+  userProfile: UserProfile = { ...this.defaultProfile };
   originalProfile: UserProfile = { ...this.userProfile };
+
+  ngOnInit() {
+    this.loadProfile();
+  }
+
+  // Load profile data from localStorage
+  loadProfile() {
+    try {
+      const savedProfile = localStorage.getItem(this.STORAGE_KEY);
+      if (savedProfile) {
+        const parsedProfile = JSON.parse(savedProfile);
+        // Convert joinDate string back to Date object
+        parsedProfile.joinDate = new Date(parsedProfile.joinDate);
+        this.userProfile = parsedProfile;
+        this.originalProfile = { ...this.userProfile };
+        console.log('Profile loaded from localStorage:', this.userProfile);
+      } else {
+        // No saved profile, use default
+        this.userProfile = { ...this.defaultProfile };
+        this.originalProfile = { ...this.userProfile };
+        console.log('Using default profile');
+      }
+    } catch (error) {
+      console.error('Error loading profile from localStorage:', error);
+      // Fall back to default profile
+      this.userProfile = { ...this.defaultProfile };
+      this.originalProfile = { ...this.userProfile };
+    }
+  }
+
+  // Save profile data to localStorage
+  saveToStorage() {
+    try {
+      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.userProfile));
+      console.log('Profile saved to localStorage successfully');
+      return true;
+    } catch (error) {
+      console.error('Error saving profile to localStorage:', error);
+      return false;
+    }
+  }
 
   toggleEditMode() {
     if (this.isEditMode) {
@@ -56,9 +100,29 @@ export class ProfileComponent {
   }
 
   saveProfile() {
-    // Here you would typically call an API to save the profile
-    console.log('Profile saved:', this.userProfile);
-    // You could add a success message here
+    // Save to localStorage
+    const saved = this.saveToStorage();
+    if (saved) {
+      console.log('Profile saved successfully:', this.userProfile);
+      // Show success message (you could use a toast notification service here)
+      this.showSuccessMessage('Profile saved successfully!');
+    } else {
+      console.error('Failed to save profile');
+      this.showErrorMessage('Failed to save profile. Please try again.');
+    }
+  }
+
+  // Simple success message (you could replace this with a proper toast service)
+  showSuccessMessage(message: string) {
+    // For now, just log. In a real app, you'd use a toast notification
+    console.log('SUCCESS:', message);
+    // You could also temporarily show a message in the UI
+  }
+
+  showErrorMessage(message: string) {
+    // For now, just log. In a real app, you'd use a toast notification
+    console.error('ERROR:', message);
+    // You could also temporarily show a message in the UI
   }
 
   onImageChange(event: any) {
@@ -67,6 +131,8 @@ export class ProfileComponent {
       const reader = new FileReader();
       reader.onload = (e: any) => {
         this.userProfile.profilePicture = e.target.result;
+        // Auto-save the profile picture change
+        this.saveToStorage();
       };
       reader.readAsDataURL(file);
     }
